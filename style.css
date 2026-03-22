@@ -211,7 +211,7 @@ input:checked + .toggle .slider::before {
 main
 ========================= */
 #main {
-  width: min(390px, 92vw);
+  width: min(370px, 92vw);
   padding: 20px;
   border: #333333 solid 1px;
   border-radius: 40px;
@@ -230,14 +230,15 @@ main
 
 .back-img {
   position: fixed;
-  bottom: 8vh;
-  right: 17.5vw;
+  bottom: 9vh;
+  right: 16vw;
   z-index: 1; /* #main(z-index:10)より低いので画面が狭くなると潜り込む */
   pointer-events: none;
 }
 
 .conteinar {
   width: 90%;
+  min-width: 190px;
 }
 
 .message {
@@ -253,12 +254,12 @@ main
 }
 
 .main-btn {
-  padding: 10px;
-  margin: 1px auto 40px;
+  padding: 8px;
+  margin: 1px auto 27px;
   border: none;
   width: 100%;
   max-width: 340px;
-  height: clamp(90px, 16dvh, 150px);
+  height: clamp(80px, 14dvh, 140px);
   border-radius: 30px;
   box-shadow: 0 4px 10px var(--shadow);
   font-size: clamp(2rem, 8vw, 4em);
@@ -290,7 +291,7 @@ button:active {
 }
 
 .drum-contents {
-  margin-right: 0.8dvw;
+  margin-right: 0.dvw;
   text-align: center;
   width: 90px;
 }
