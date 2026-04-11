@@ -2,27 +2,33 @@
 
 const $ = (e) => document.getElementById(e);
 
+// --- DOM要素 ---
 const $hamburger = $('hamburger');
 const $nav = $('navigation');
 const $theme = $('theme');
-const $selectTheme = $('selectTheme');
-const $random = $('random');
 const $drum = $('drum');
 const $drumSelect = $('drum-select');
-const $standByNext = $('next-standBy-bgm');
-const $admissionNext = $('next-admission-bgm');
-const $closingNext = $('next-closing-bgm');
-const $btnStandBy = $('standBy');
-const $btnAdmission = $('admission');
-const $btnClosing = $('closing');
-const $standByText = $('standBy-text');
-const $admissionText = $('admission-text');
-const $closingText = $('closing-text');
-const $standByShapes = $('standBy-shapes');
-const $admissionShapes = $('admission-shapes');
-const $closingShapes = $('closing-shapes');
 const $thisBgm = $('this-bgm');
 
+// 各カテゴリーのNext表示用
+const nextElements = {
+  standBy: $('next-standBy-bgm'),
+  admission: $('next-admission-bgm'),
+  closing: $('next-closing-bgm'),
+  introduction: $('next-introduction-bgm'),
+  bulletin: $('next-bulletin-bgm')
+};
+
+// メインボタン群
+const buttons = {
+  standBy: { btn: $('standBy'), text: $('standBy-text'), shape: $('standBy-shapes'), label: '待機' },
+  admission: { btn: $('admission'), text: $('admission-text'), shape: $('admission-shapes'), label: '入場' },
+  closing: { btn: $('closing'), text: $('closing-text'), shape: $('closing-shapes'), label: '閉会' },
+  introduction: { btn: $('introduction'), text: $('introduction-text'), shape: $('introduction-shapes'), label: '紹介' },
+  bulletin: { btn: $('bulletin'), text: $('bulletin-text'), shape: $('bulletin-shapes'), label: '会報' }
+};
+
+// --- データ定義 ---
 const bgm = {
   standBy: [
     { id: 'sb01', title: '待機曲 01', path: 'standBy_title_01' },
@@ -33,6 +39,16 @@ const bgm = {
     { id: 'sb06', title: '待機曲 06', path: 'standBy_title_06' },
     { id: 'sb07', title: '待機曲 07', path: 'standBy_title_07' },
   ],
+  bulletin: [
+    { id: 'bu01', title: '会報曲 01', path: 'bulletin_title_01' },
+    { id: 'bu02', title: '会報曲 02', path: 'bulletin_title_02' },
+    { id: 'bu03', title: '会報曲 03', path: 'bulletin_title_03' },
+  ],
+  introduction: [
+    { id: 'in01', title: '紹介曲 01', path: 'introduction_title_01' },
+    { id: 'in02', title: '紹介曲 02', path: 'introduction_title_02' },
+    { id: 'in03', title: '紹介曲 03', path: 'introduction_title_03' },
+  ],
   admission: [
     { id: 'ad01', title: '入場曲 01', path: 'admission_title_01' },
     { id: 'ad02', title: '入場曲 02', path: 'admission_title_02' },
@@ -40,6 +56,7 @@ const bgm = {
     { id: 'ad04', title: '入場曲 04', path: 'admission_title_04' },
     { id: 'ad05', title: '入場曲 05', path: 'admission_title_05' },
     { id: 'ad06', title: '入場曲 06', path: 'admission_title_06' },
+    { id: 'ad07', title: '入場曲 07', path: 'admission_title_07' },
   ],
   closing: [
     { id: 'cl01', title: '閉会曲 01', path: 'closing_title_01' },
@@ -55,298 +72,367 @@ const bgm = {
 };
 
 const settings = {
-  theme: false,
-  random: false,
-
-  standByNext: '待機曲 01',
-  admissionNext: '入場曲 01',
-  closingNext: '閉会曲 01',
-  drumRollNext: 'Medium',
-
+  useCustom: false,
+  customPlaylists: {
+    standBy: [], bulletin: [], introduction: [], admission: [], closing: []
+  },
   playing: null,
   thisBgm: '',
-
   stopText: '停止',
-  btnStandBy: '待機',
-  btnAdmission: '入場',
-  btnClosing: '閉会',
-
-  drumRollState: true,
-  standByState: true,
-  admissionState: true,
-  closingState: true,
+  // true = 待機中（再生可能）, false = 再生中（停止可能）
+  states: {
+    standBy: true, bulletin: true, introduction: true,
+    admission: true, closing: true, drumRoll: true
+  },
 };
 
-// 予約曲順リスト
-const playListManager = {
-  standBy: {
-    queue: [
-      { id: 'sb01', title: '待機曲 01', path: 'standBy_title_01' },
-      { id: 'sb02', title: '待機曲 02', path: 'standBy_title_02' },
-      { id: 'sb03', title: '待機曲 03', path: 'standBy_title_03' },
-      { id: 'sb04', title: '待機曲 04', path: 'standBy_title_04' },
-      { id: 'sb05', title: '待機曲 05', path: 'standBy_title_05' },
-      { id: 'sb06', title: '待機曲 06', path: 'standBy_title_06' },
-      { id: 'sb07', title: '待機曲 07', path: 'standBy_title_07' },
-    ], index: 0
-  },
-  admission: {
-    queue: [
-      { id: 'ad01', title: '入場曲 01', path: 'admission_title_01' },
-      { id: 'ad02', title: '入場曲 02', path: 'admission_title_02' },
-      { id: 'ad03', title: '入場曲 03', path: 'admission_title_03' },
-      { id: 'ad04', title: '入場曲 04', path: 'admission_title_04' },
-      { id: 'ad05', title: '入場曲 05', path: 'admission_title_05' },
-      { id: 'ad06', title: '入場曲 06', path: 'admission_title_06' },
-    ], index: 0
-  },
-  closing: {
-    queue: [
-      { id: 'cl01', title: '閉会曲 01', path: 'closing_title_01' },
-      { id: 'cl02', title: '閉会曲 02', path: 'closing_title_02' },
-      { id: 'cl03', title: '閉会曲 03', path: 'closing_title_03' },
-      { id: 'cl04', title: '閉会曲 04', path: 'closing_title_04' },
-    ], index: 0
+// カテゴリごとの再生位置管理（drumRoll含む）
+const playListManager = {};
+['standBy', 'admission', 'closing', 'introduction', 'bulletin', 'drumRoll'].forEach(cat => {
+  playListManager[cat] = { index: 0 };
+});
+
+let currentEditingCategory = '';
+
+// --- 画面切り替え ---
+const $mainView = $('main');
+const $settingsView = $('settings-view');
+
+function switchView(view) {
+  if (view === 'settings') {
+    $mainView.style.display = 'none';
+    $settingsView.style.display = 'block';
+  } else {
+    $mainView.style.display = 'block';
+    $settingsView.style.display = 'none';
   }
-};
+  // ナビを閉じる
+  $hamburger.classList.remove('is-active');
+  $nav.classList.remove('is-active');
+}
 
-// ----------------------------------------
-// UI反映
-// ----------------------------------------
+// --- 有効なプレイリストを返す ---
+// useCustom が ON かつカスタムリストが1曲以上あればカスタム、なければデフォルト
+function getSource(category) {
+  if (
+    settings.useCustom &&
+    settings.customPlaylists[category] &&
+    settings.customPlaylists[category].length > 0
+  ) {
+    return settings.customPlaylists[category];
+  }
+  return bgm[category];
+}
+
+// --- UI反映 ---
 function applySettingsToUI() {
-  $selectTheme.checked = settings.theme;
-  $theme.className = settings.theme ? 'theme-dark' : 'theme';
-  $random.checked = settings.random;
-  $standByNext.textContent = settings.standByNext;
-  $admissionNext.textContent = settings.admissionNext;
-  $closingNext.textContent = settings.closingNext;
+  const $useCustomChk = $('useCustom');
+  if ($useCustomChk) $useCustomChk.checked = settings.useCustom;
+
   $thisBgm.textContent = settings.thisBgm;
-  $standByText.textContent = settings.btnStandBy;
-  $standByShapes.className = settings.standByState ? 'icon-play' : 'icon-stop';
-  $admissionText.textContent = settings.btnAdmission;
-  $admissionShapes.className = settings.admissionState ? 'icon-play' : 'icon-stop';
-  $closingText.textContent = settings.btnClosing;
-  $closingShapes.className = settings.closingState ? 'icon-play' : 'icon-stop';
+
+  for (const cat in nextElements) {
+    const source = getSource(cat);
+    const idx = playListManager[cat].index;
+    nextElements[cat].textContent = source[idx]?.title || 'なし';
+  }
+
+  for (const cat in buttons) {
+    const b = buttons[cat];
+    b.text.textContent = settings.states[cat] ? b.label : settings.stopText;
+    b.shape.className = settings.states[cat] ? 'icon-play' : 'icon-stop';
+    b.shape.textContent = settings.states[cat] ? '▶' : '⏹';
+  }
 }
 
-// ----------------------------------------
-// 再生
-// ----------------------------------------
+// --- 再生ロジック ---
 function playSound() {
-  settings.playing?.play().catch(err => {
-    console.log("再生エラー", err);
-  });
+  settings.playing?.play().catch(err => console.log('再生エラー:', err));
 }
 
-function whatNow(category, next) {
-  const foundTrack = bgm[category].find(track => track.title === settings[next]);
-  if (!foundTrack) return;
+function whatNow(category) {
+  const source = getSource(category);
+  const track = source[playListManager[category].index];
+  if (!track) return;
 
-  settings.playing = new Audio(`./bgm/${category}/${foundTrack.path}.mp3`);
-  settings.thisBgm = foundTrack.title;
+  const pathPrefix = category === 'drumRoll' ? 'drumRoll' : category;
+  settings.playing = new Audio(`./bgm/${pathPrefix}/${track.path}.mp3`);
+  settings.thisBgm = track.title;
+  applySettingsToUI();
 
   settings.playing.onended = () => {
     if (category === 'drumRoll') {
-      settings.drumRollState = true;
+      // ドラムロールは1回鳴らして終わり
+      settings.states.drumRoll = true;
+      settings.playing = null;
       settings.thisBgm = '';
-      applySettingsToUI();
       setButtonsState(false);
+      applySettingsToUI();
     } else {
-      getNextTrack(category);
-      whatNow(category, next);
+      // 次のトラックへ進んで連続再生
+      advanceTrack(category);
+      whatNow(category);
       playSound();
     }
   };
 }
 
-// ----------------------------------------
-// 停止（iOS対応）
-// ----------------------------------------
+// インデックスを1つ進める（末尾なら0に戻る）
+function advanceTrack(category) {
+  const source = getSource(category);
+  playListManager[category].index =
+    (playListManager[category].index + 1) % source.length;
+  applySettingsToUI();
+}
+
+// --- 停止処理 ---
 function stopAudio(audioRef) {
-  const s = audioRef;
-  if (!s) return;
-
-  s.onended = null; // 自動連続再生を止める
-
+  if (!audioRef) return;
+  audioRef.onended = null;
   const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent);
-
   if (isIOS) {
-    // iOSはvolumeプロパティが読み取り専用なのでフェードなしで即停止
-    s.pause();
-    s.currentTime = 0;
+    audioRef.pause();
+    audioRef.currentTime = 0;
   } else {
     const FADE_OUT_DURATION = 1500;
     const interval = 100;
-    const currentVol = s.volume;
-    const step = Math.max(0.001, currentVol / (FADE_OUT_DURATION / interval));
-
-    const fadeOutInterval = setInterval(() => {
-      if (s.volume > step) {
-        s.volume -= step;
+    const step = audioRef.volume / (FADE_OUT_DURATION / interval);
+    const fadeOut = setInterval(() => {
+      if (audioRef.volume > step) {
+        audioRef.volume -= step;
       } else {
-        s.volume = 0;
-        s.pause();
-        clearInterval(fadeOutInterval);
+        audioRef.volume = 0;
+        audioRef.pause();
+        clearInterval(fadeOut);
       }
     }, interval);
   }
 }
 
-// ----------------------------------------
-// ボタン表示切り替え
-// ----------------------------------------
-function buttonChange(bool, btnKey, label) {
-  settings[btnKey] = bool ? settings.stopText : label;
-  applySettingsToUI();
-}
-
-// ----------------------------------------
-// ボタン有効・無効
-// ----------------------------------------
-const allButtons = [$btnStandBy, $btnAdmission, $btnClosing, $drum];
-
 function setButtonsState(bool, currentBtn) {
-  allButtons.forEach(btn => {
+  const all = [...Object.values(buttons).map(b => b.btn), $drum];
+  all.forEach(btn => {
     if (btn !== currentBtn) {
       btn.disabled = bool;
-      btn.style.opacity = bool ? "0.5" : "1.0";
-      btn.style.cursor = bool ? "not-allowed" : "pointer";
+      btn.style.opacity = bool ? '0.5' : '1.0';
+      btn.style.cursor = bool ? 'not-allowed' : 'pointer';
     }
   });
 }
 
-// ----------------------------------------
-// 次の曲を取得
-// ----------------------------------------
-function getNextTrack(category) {
-  const manager = playListManager[category];
-  manager.index++;
+// --- カスタム曲選択（設定画面） ---
+function renderSettings(category) {
+  currentEditingCategory = category;
+  $('settings-title').textContent = `${buttons[category].label}曲 の選択 (最大5曲)`;
 
-  if (manager.index >= manager.queue.length) {
-    manager.queue = settings.random ? shuffle(bgm[category]) : [...bgm[category]];
-    manager.index = 0;
-  }
+  const container = $('available-songs');
+  const sortableList = $('sortable-list');
+  container.innerHTML = '';
+  sortableList.innerHTML = '';
 
-  settings[`${category}Next`] = manager.queue[manager.index].title;
-  applySettingsToUI();
-}
-
-// ----------------------------------------
-// シャッフル
-// ----------------------------------------
-function shuffle(array) {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-  return newArray;
-}
-
-// ----------------------------------------
-// イベントリスナー
-// ----------------------------------------
-$hamburger.addEventListener('click', () => {
-  $hamburger.classList.toggle('is-active');
-  $nav.classList.toggle('is-active');
-});
-
-$selectTheme.addEventListener('change', () => {
-  settings.theme = $selectTheme.checked;
-  applySettingsToUI();
-});
-
-$random.addEventListener('change', (e) => {
-  settings.random = e.target.checked;
-
-  ['standBy', 'admission', 'closing'].forEach(cat => {
-    playListManager[cat].queue = settings.random ? shuffle(bgm[cat]) : [...bgm[cat]];
-    playListManager[cat].index = 0;
-    settings[`${cat}Next`] = playListManager[cat].queue[0].title;
+  // 全曲リスト（チェックボックス）
+  bgm[category].forEach(track => {
+    const isSelected = settings.customPlaylists[category].some(t => t.id === track.id);
+    const div = document.createElement('div');
+    div.className = 'song-item';
+    div.innerHTML = `
+      <input type="checkbox" id="chk-${track.id}" ${isSelected ? 'checked' : ''}>
+      <label for="chk-${track.id}">${track.title}</label>
+    `;
+    div.querySelector('input').onchange = (e) => toggleSong(track, e.target.checked);
+    container.appendChild(div);
   });
 
+  // 再生順リスト（ドラッグで並び替え）
+  settings.customPlaylists[category].forEach(track => {
+    sortableList.appendChild(createSortableItem(track));
+  });
+}
+
+function toggleSong(track, isChecked) {
+  const list = settings.customPlaylists[currentEditingCategory];
+  if (isChecked) {
+    if (list.length >= 5) {
+      alert('最大5曲まで選択可能です。');
+      renderSettings(currentEditingCategory);
+      return;
+    }
+    list.push(track);
+  } else {
+    const idx = list.findIndex(t => t.id === track.id);
+    if (idx > -1) list.splice(idx, 1);
+  }
+  // カテゴリの再生位置をリセット（曲順が変わるため）
+  playListManager[currentEditingCategory].index = 0;
+  saveToLocalStorage();
+  renderSettings(currentEditingCategory);
   applySettingsToUI();
+}
+
+function createSortableItem(track) {
+  const li = document.createElement('li');
+  li.textContent = track.title;
+  li.draggable = true;
+  li.dataset.id = track.id;
+
+  li.addEventListener('dragstart', () => li.classList.add('dragging'));
+  li.addEventListener('dragend', () => {
+    li.classList.remove('dragging');
+    updateOrderFromUI();
+  });
+  return li;
+}
+
+function updateOrderFromUI() {
+  const items = [...$('sortable-list').querySelectorAll('li')];
+  settings.customPlaylists[currentEditingCategory] = items.map(item =>
+    bgm[currentEditingCategory].find(t => t.id === item.dataset.id)
+  );
+  // 並び替えたらインデックスをリセット
+  playListManager[currentEditingCategory].index = 0;
+  saveToLocalStorage();
+  applySettingsToUI();
+}
+
+// ドラッグ移動中の処理
+$('sortable-list').addEventListener('dragover', e => {
+  e.preventDefault();
+  const draggingItem = document.querySelector('.dragging');
+  if (!draggingItem) return;
+  const siblings = [...$('sortable-list').querySelectorAll('li:not(.dragging)')];
+  const nextSibling = siblings.find(
+    sibling => e.clientY <= sibling.offsetTop + sibling.offsetHeight / 2
+  );
+  $('sortable-list').insertBefore(draggingItem, nextSibling || null);
 });
 
-$drumSelect.addEventListener('change', (e) => {
-  const foundTrack = bgm.drumRoll.find(track => track.title === e.target.value);
-  if (foundTrack) settings.drumRollNext = foundTrack.title;
-});
+// --- データ保存・入出力 ---
+function saveToLocalStorage() {
+  localStorage.setItem('playlist_custom_settings', JSON.stringify(settings.customPlaylists));
+}
 
-$btnStandBy.addEventListener('click', () => {
-  const bool = settings.standByState;
-
-  if (bool) {
-    setButtonsState(true, $btnStandBy);
-    whatNow('standBy', 'standByNext');
-    playSound();
-    getNextTrack('standBy');
-  } else {
-    const audioToStop = settings.playing;
-    settings.playing = null;
-    settings.thisBgm = '';
-    stopAudio(audioToStop);
-    setButtonsState(false);
+$('csv-export').onclick = () => {
+  let csv = 'category,id,title\n';
+  for (const cat in settings.customPlaylists) {
+    settings.customPlaylists[cat].forEach(t => {
+      csv += `${cat},${t.id},${t.title}\n`;
+    });
   }
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'music_settings.csv';
+  a.click();
+};
 
-  settings.standByState = !bool;
-  buttonChange(bool, 'btnStandBy', '待機');
+$('csv-import').onchange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const lines = evt.target.result.split('\n').slice(1);
+    const newData = { standBy: [], bulletin: [], introduction: [], admission: [], closing: [] };
+    lines.forEach(line => {
+      const [cat, id] = line.split(',');
+      if (cat && id && bgm[cat]) {
+        const track = bgm[cat].find(t => t.id === id.trim());
+        if (track) newData[cat].push(track);
+      }
+    });
+    settings.customPlaylists = newData;
+    // インポート後は全カテゴリのインデックスをリセット
+    for (const cat in playListManager) playListManager[cat].index = 0;
+    saveToLocalStorage();
+    applySettingsToUI();
+    alert('設定を読み込みました。');
+  };
+  reader.readAsText(file);
+};
+
+// --- イベントリスナー設定 ---
+$hamburger.onclick = () => {
+  $hamburger.classList.toggle('is-active');
+  $nav.classList.toggle('is-active');
+};
+
+$('view-player').onclick = (e) => {
+  e.preventDefault();
+  switchView('player');
+};
+
+document.querySelectorAll('.select-category').forEach(el => {
+  el.onclick = () => {
+    switchView('settings');
+    renderSettings(el.dataset.cat);
+  };
 });
 
-$btnAdmission.addEventListener('click', () => {
-  const bool = settings.admissionState;
+$('back-to-player').onclick = () => switchView('player');
 
-  if (bool) {
-    setButtonsState(true, $btnAdmission);
-    whatNow('admission', 'admissionNext');
-    getNextTrack('admission');
-    playSound();
-  } else {
-    const audioToStop = settings.playing;
+$('useCustom').onchange = (e) => {
+  settings.useCustom = e.target.checked;
+  // モード切り替え時はインデックスをリセット
+  for (const cat in playListManager) playListManager[cat].index = 0;
+  applySettingsToUI();
+};
+
+// メインボタンのイベント一括登録
+for (const cat in buttons) {
+  buttons[cat].btn.onclick = () => {
+    const isReady = settings.states[cat];
+    if (isReady) {
+      // 再生開始
+      stopAudio(settings.playing);
+      settings.playing = null;
+      setButtonsState(true, buttons[cat].btn);
+      whatNow(cat);
+      playSound();
+    } else {
+      // 停止
+      stopAudio(settings.playing);
+      settings.playing = null;
+      settings.thisBgm = '';
+      setButtonsState(false);
+    }
+    settings.states[cat] = !isReady;
+    applySettingsToUI();
+  };
+}
+
+$drum.onclick = () => {
+  const isReady = settings.states.drumRoll;
+  if (isReady) {
+    stopAudio(settings.playing);
     settings.playing = null;
-    settings.thisBgm = '';
-    stopAudio(audioToStop);
-    setButtonsState(false);
-  }
-
-  settings.admissionState = !bool;
-  buttonChange(bool, 'btnAdmission', '入場');
-});
-
-$btnClosing.addEventListener('click', () => {
-  const bool = settings.closingState;
-
-  if (bool) {
-    setButtonsState(true, $btnClosing);
-    whatNow('closing', 'closingNext');
-    getNextTrack('closing');
-    playSound();
-  } else {
-    const audioToStop = settings.playing;
-    settings.playing = null;
-    settings.thisBgm = '';
-    stopAudio(audioToStop);
-    setButtonsState(false);
-  }
-
-  settings.closingState = !bool;
-  buttonChange(bool, 'btnClosing', '閉会');
-});
-
-$drum.addEventListener('click', () => {
-  const bool = settings.drumRollState;
-
-  if (bool) {
     setButtonsState(true, $drum);
-    whatNow('drumRoll', 'drumRollNext');
+    whatNow('drumRoll');
     playSound();
   } else {
-    const audioToStop = settings.playing;
+    stopAudio(settings.playing);
     settings.playing = null;
     settings.thisBgm = '';
-    stopAudio(audioToStop);
     setButtonsState(false);
   }
+  settings.states.drumRoll = !isReady;
+  applySettingsToUI();
+};
 
-  settings.drumRollState = !bool;
-});
+$drumSelect.onchange = (e) => {
+  const track = bgm.drumRoll.find(t => t.title === e.target.value);
+  if (track) {
+    playListManager.drumRoll.index = bgm.drumRoll.indexOf(track);
+  }
+};
+
+// --- 初期化 ---
+window.onload = () => {
+  const saved = localStorage.getItem('playlist_custom_settings');
+  if (saved) {
+    try {
+      settings.customPlaylists = JSON.parse(saved);
+    } catch (err) {
+      console.warn('保存データの読み込みに失敗しました:', err);
+    }
+  }
+  applySettingsToUI();
+};
