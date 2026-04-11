@@ -15,31 +15,35 @@
   </div>
   <nav class="navigation" id="navigation">
     <ul class="menu-contents">
+      <li><a href="#" id="view-player">プレイヤー画面</a></li>
       <li>
-        <a href="#">環境設定
+        <a href="#">曲選択（カスタム設定）</a>
+        <div class="nav-sub-menu">
+          <div class="nav-contents select-category" data-cat="standBy">待機曲</div>
+          <div class="nav-contents select-category" data-cat="bulletin">会報曲</div>
+          <div class="nav-contents select-category" data-cat="introduction">紹介曲</div>
+          <div class="nav-contents select-category" data-cat="admission">入場曲</div>
+          <div class="nav-contents select-category" data-cat="closing">閉会曲</div>
+        </div>
+      </li>
+      <li>
+        <a href="#">高度な設定
           <div class="nav-contents">
             <label class="switch">
-              <span class="environment">ダーク</span>
-              <input type="checkbox" id="selectTheme" />
-              <span class="toggle">
-                <span class="slider"></span>
-              </span>
+              <span class="environment">カスタム再生</span>
+              <input type="checkbox" id="useCustom" />
+              <span class="toggle"><span class="slider"></span></span>
             </label>
           </div>
+          <div class="nav-contents" id="csv-export">設定をCSV保存</div>
           <div class="nav-contents">
-            <label class="switch">
-              <span class="environment">ランダム</span>
-              <input type="checkbox" id="random"/>
-              <span class="toggle">
-                <span class="slider"></span>
-              </span>
-            </label>
+            <label for="csv-import" style="cursor:pointer;">CSVから読込</label>
+            <input type="file" id="csv-import" accept=".csv" style="display:none;" />
           </div>
         </a>
       </li>
-    </ul>    
+    </ul>
   </nav>
-
   <div id="main">
     
     <div class="player">
@@ -49,37 +53,60 @@
       </div>
     </div>
 
-    <div class="conteinar">      
-      <div id="contents">Next BGM
-        <span class="next-bgm" id="next-standBy-bgm">待機曲 01</span>          
+    <!-- ボタンを2列グリッドで並べる -->
+    <div class="btn-grid">
+      
+      <div class="conteinar">      
+        <div id="contents">Next BGM
+          <span class="next-bgm" id="next-standBy-bgm">待機曲 01</span>          
+        </div>      
+        <button class="main-btn" id="standBy">
+          <span id="standBy-text">待機</span><p id="standBy-shapes" class="icon-play">▶</p>
+        </button>
+      </div>
+      
+      <div class="conteinar">
+        <div id="contents">Next BGM
+          <span class="next-bgm" id="next-bulletin-bgm">会報曲 01</span>
+        </div>
+        <button class="main-btn" id="bulletin">
+          <span id="bulletin-text">会報</span>
+          <p id="bulletin-shapes" class="icon-play">▶</p>
+        </button>
+      </div>
+
+      <div class="conteinar">
+        <div id="contents">Next BGM
+          <span class="next-bgm" id="next-introduction-bgm">紹介曲 01</span>
+        </div>
+        <button class="main-btn" id="introduction">
+          <span id="introduction-text">紹介</span>
+          <p id="introduction-shapes" class="icon-play">▶</p>
+        </button>
+      </div>
+
+      <div class="conteinar">
+        <div id="contents">Next BGM
+          <span class="next-bgm" id="next-admission-bgm">入場曲 01</span>
+        </div>
+        <button class="main-btn" id="admission">
+          <span id="admission-text">入場</span>
+          <p id="admission-shapes" class="icon-play">▶</p>
+        </button>
       </div>      
-      <button class="main-btn" id="standBy">
-        <span id="standBy-text">待機</span><p id="standBy-shapes" class="icon-play">▶</p>
-      </button>
-    </div>
 
-    <div class="conteinar">
-      <div id="contents">Next BGM
-        <span class="next-bgm" id="next-admission-bgm">入場曲 01</span>
-      </div>
-      <button class="main-btn" id="admission">
-        <span id="admission-text">入場</span>
-        <p id="admission-shapes" class="icon-play">▶</p>
-      </button>
-    </div>
+      <div class="conteinar">
+        <div id="contents">Next BGM
+          <span class="next-bgm" id="next-closing-bgm">閉会曲 01</span>
+        </div>
+        <button class="main-btn" id="closing">
+          <span id="closing-text">閉会</span>
+          <p id="closing-shapes" class="icon-play">▶</p>
+        </button>
+      </div>     
+      
+    </div><!-- /.btn-grid -->
 
-    <div class="conteinar">
-      <div id="contents">Next BGM
-        <span class="next-bgm" id="next-closing-bgm">閉会曲 01</span>
-      </div>
-      <button class="main-btn" id="closing">
-        <span id="closing-text">閉会</span>
-        <p id="closing-shapes" class="icon-play">▶</p>
-      </button>
-    </div>
-
-    
-    
     <div class="drum-conteinar">
       <div class="drum-contents">
         <button class="drum" id="drum"><img src="./drum.png" alt="drum-roll"></button>
@@ -92,6 +119,24 @@
     </div>
     
   </div>
+
+  <div id="settings-view" style="display:none;">
+    <div class="settings-header">
+      <h2 id="settings-title">カテゴリ名</h2>
+      <button id="back-to-player">戻る</button>
+    </div>
+    <div class="settings-layout">
+      <div class="song-selection-list">
+        <h3>楽曲一覧 (最大5曲選択)</h3>
+        <div id="available-songs"></div>
+      </div>
+      <div class="selected-sort-list">
+        <h3>再生順 (ドラッグで入れ替え)</h3>
+        <ul id="sortable-list"></ul>
+      </div>
+    </div>
+  </div>
+
   <img src="./girl.png" alt="girl" class="back-img">
   <script src="script.js"></script>
 </body>
