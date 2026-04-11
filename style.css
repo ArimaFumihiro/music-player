@@ -31,11 +31,11 @@
 }
 
 .theme-dark {
-  --bg: #000000;
-  --bg2: #000000;
+  --bg: #101010;
+  --bg2: #050505;
   --nav: #282828;
   --accent: #ffffff;
-  --accent-2: #ffffff;
+  --accent-2: #666;
   --text: #ffffff;
   --text-2: #0f0f0f;
   --text-3: #333333;
@@ -211,7 +211,7 @@ input:checked + .toggle .slider::before {
 main
 ========================= */
 #main {
-  width: min(320px, 92vw);
+  width: min(400px, 92vw);
   padding: 20px;
   border: #333333 solid 1px;
   border-radius: 40px;
@@ -220,25 +220,45 @@ main
   background: linear-gradient(to bottom right, var(--bg), var(--bg2));
   box-shadow: 0 30px 30px var(#000000);
   box-sizing: border-box;
-  /* 常に画面中央に固定 */
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
+  /* 縦にはみ出す場合はスクロール可能に */
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .back-img {
   position: fixed;
   bottom: 3vh;
   right: 12vw;
-  z-index: 1; /* #main(z-index:10)より低いので画面が狭くなると潜り込む */
+  z-index: 1;
   pointer-events: none;
 }
 
+/* =========================
+2列グリッド
+========================= */
+.btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 5つ目のボタン（奇数）を中央に配置 */
+.btn-grid .conteinar:nth-child(5) {
+  grid-column: 1 / -1;
+  width: 50%;
+  margin: 0 auto;
+}
+
 .conteinar {
-  width: 90%;
-  min-width: 190px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .message {
@@ -247,22 +267,33 @@ main
 }
 
 .next-bgm {
-  color: #333333;
-  margin: 0px 20px 8px;
-  width: 180px;
+  color: var(--text);
+  margin: 0px 4px 4px;
+  width: 100%;
   border: none;
+  font-size: 0.75em;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#contents {
+  font-size: 0.7em;
+  color: var(--text);
+  margin-bottom: 2px;
 }
 
 .main-btn {
-  padding: 8px;
-  margin: 1px auto 25px;
+  padding: 6px;
+  margin: 1px auto 14px;
   border: none;
   width: 100%;
   max-width: 340px;
-  height: clamp(80px, 14dvh, 140px);
-  border-radius: 30px;
+  height: clamp(64px, 11dvh, 120px);
+  border-radius: 24px;
   box-shadow: 0 4px 10px var(--shadow);
-  font-size: clamp(1.5rem, 7vw, 3.4em);
+  font-size: clamp(1.2rem, 5vw, 2.4em);
   font-weight: bold;
   color: var(--text-2);
   background: linear-gradient(var(--accent), var(--accent-2));
@@ -271,7 +302,7 @@ main
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 10px;
   box-sizing: border-box;
 }
 
@@ -313,9 +344,9 @@ button:active {
 
 .icon-stop {
   margin: 5px 0px 0px;
-  font-size: 2rem;
-  height: 53px;
-  width: 53px;
+  font-size: 0.1rem;
+  height: 30px;
+  width: 30px;
   color: var(--bg);
   background-color: var(--bg);
   display: inline-block;
@@ -359,6 +390,70 @@ player
   100% { transform: translateX(-100%); }
 }
 
+/* 設定画面のスタイル */
+#settings-view {
+  width: min(600px, 95vw);
+  background: var(--nav);
+  padding: 20px;
+  border-radius: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  max-height: 95vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+  color: var(--text);
+}
+
+.settings-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+#sortable-list {
+  list-style: none;
+  padding: 0;
+}
+
+#sortable-list li {
+  background: var(--bg);
+  margin: 5px 0;
+  padding: 10px;
+  border: 1px solid var(--border-line);
+  cursor: grab;
+  border-radius: 5px;
+}
+
+#sortable-list li.dragging {
+  opacity: 0.5;
+  background: var(--accent);
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+}
+
+.nav-sub-menu {
+  margin-left: 15px;
+  font-size: 0.9em;
+}
+
+.select-category {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.select-category:hover {
+  background: var(--border-line);
+}
+
+
 /* =========================
 レスポンシブ（スマホ）
 ========================= */
@@ -368,9 +463,9 @@ player
   }
 
   #main {
-    width: 90vw;
+    width: 92vw;
     border-radius: 24px;
-    padding: 16px;
+    padding: 14px;
   }
 
   .hamburger {
@@ -384,19 +479,22 @@ player
     width: 50vw;
   }
 
+  .btn-grid {
+    gap: 0 8px;
+  }
+
   .main-btn {
-    height: clamp(80px, 22vw, 120px);
-    font-size: clamp(2.5rem, 7vw, 2.8rem);
-    border-radius: 20px;
-    justify-self: center;
-    margin-bottom: 24px;
-    gap: 12px;
+    height: clamp(56px, 18vw, 100px);
+    font-size: clamp(1.1rem, 5.5vw, 2rem);
+    border-radius: 18px;
+    margin-bottom: 10px;
+    gap: 6px;
   }
 
   .icon-stop {
-    font-size: 1.5rem;
-    height: 21px;
-    width: 21px;
+    font-size: 1.2rem;
+    height: 18px;
+    width: 18px;
   }
 
   .drum {
@@ -411,4 +509,29 @@ player
   .navigation {
     width: 80vw;
   }
+}
+
+/* スマホでの設定画面レイアウト調整 */
+@media (max-width: 600px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+    /* 2列から1列に変更 */
+    gap: 10px;
+  }
+
+  .song-selection-list,
+  .selected-sort-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-line);
+    padding: 10px;
+    border-radius: 10px;
+  }
+}
+
+/* ドラッグ中の視認性向上 */
+#sortable-list li.dragging {
+  background: var(--accent);
+  color: var(--text-2);
+  opacity: 0.8;
 }
