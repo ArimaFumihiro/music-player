@@ -446,6 +446,57 @@ player
   background: var(--border-line);
 }
 
+/* =========================
+  追加機能（再生時間・音量）
+  ========================= */
+.time-display {
+  font-family: monospace;
+  font-size: 1rem;
+  margin: 5px 0;
+  color: var(--text);
+}
+
+.volume-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.volume-container input[type="range"] {
+  width: 60%;
+  max-width: 200px;
+  cursor: pointer;
+  accent-color: var(--accent);
+  /* テーマカラーに合わせる */
+}
+
+/* =========================
+  音量調整ボタンのスタイル
+  ========================= */
+.vol-btn {
+  background-color: var(--nav);
+  color: var(--text);
+  border: 1px solid var(--border-line);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.vol-btn:hover {
+  background-color: var(--accent);
+  color: var(--text-2);
+  transform: translateY(-2px);
+}
+
+.vol-btn:active {
+  transform: translateY(0);
+}
 
 /* =========================
 レスポンシブ（スマホ）
