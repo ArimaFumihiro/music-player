@@ -6,9 +6,14 @@ const $ = (e) => document.getElementById(e);
 const $hamburger = $('hamburger');
 const $nav = $('navigation');
 const $theme = $('theme');
+const $themeToggle = $('theme-toggle');
 const $drum = $('drum');
 const $drumSelect = $('drum-select');
 const $thisBgm = $('this-bgm');
+const $timeDisplay = $('time-display');
+const $volumeSlider = $('volume-slider');
+const $btnVolMid = $('btn-vol-mid');
+const $btnVolMax = $('btn-vol-max');
 
 // 各カテゴリーのNext表示用
 const nextElements = {
@@ -76,7 +81,9 @@ const bgm = {
     { id: 'ad07', title: '入場曲 07', path: 'admission_title_07' },
   ],
   award: [
-    { id: 'aw01', title: '表彰曲 01', path: 'award_title_01' }
+    { id: 'aw01', title: '表彰曲 01', path: 'award_title_01' },
+    { id: 'aw02', title: '表彰曲 02', path: 'award_title_02' },
+    { id: 'aw03', title: '表彰曲 03', path: 'award_title_03' }
   ],
   closing: [
     { id: 'cl01', title: '閉会曲 01', path: 'closing_title_01' },
@@ -151,6 +158,11 @@ function applySettingsToUI() {
 
   $thisBgm.textContent = settings.thisBgm;
 
+  // ▼▼ 再生されていない時は時間をリセット ▼▼
+  if (!settings.playing) {
+    $timeDisplay.textContent = '00:00 / 00:00';
+  }
+
   for (const cat in nextElements) {
     const source = getSource(cat);
     const idx = playListManager[cat].index;
@@ -165,6 +177,14 @@ function applySettingsToUI() {
   }
 }
 
+// 秒数を MM:SS に変換する関数
+function formatTime(time) {
+  if (isNaN(time)) return '00:00';
+  const min = Math.floor(time / 60);
+  const sec = Math.floor(time % 60);
+  return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+}
+
 // --- 再生ロジック ---
 function playSound() {
   settings.playing?.play().catch(err => console.log('再生エラー:', err));
@@ -177,6 +197,24 @@ function whatNow(category) {
 
   const pathPrefix = category === 'drumRoll' ? 'drumRoll' : category;
   settings.playing = new Audio(`./bgm/${pathPrefix}/${track.path}.mp3`);
+
+  if (settings.volume === undefined) {
+    settings.volume = $volumeSlider.value; // 初期値が迷子になっている場合は、スライダーの値を直接もらう！
+  }
+  settings.playing.volume = settings.volume;
+
+  // メタデータ読み込み時（曲の長さを取得して表示）
+  settings.playing.addEventListener('loadedmetadata', () => {
+    $timeDisplay.textContent = `00:00 / ${formatTime(settings.playing.duration)}`;
+  });
+
+  // 再生時間の更新イベント（毎秒実行される）
+  settings.playing.addEventListener('timeupdate', () => {
+    const current = settings.playing.currentTime;
+    const duration = settings.playing.duration;
+    $timeDisplay.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+  });
+
   settings.thisBgm = track.title;
   applySettingsToUI();
 
@@ -331,7 +369,7 @@ function saveToLocalStorage() {
   localStorage.setItem('playlist_custom_settings', JSON.stringify(settings.customPlaylists));
 }
 
-$('csv-export').onclick = () => {
+$('download-csv').onclick = () => {
   let csv = 'category,id,title\n';
   for (const cat in settings.customPlaylists) {
     settings.customPlaylists[cat].forEach(t => {
@@ -345,7 +383,7 @@ $('csv-export').onclick = () => {
   a.click();
 };
 
-$('csv-import').onchange = (e) => {
+$('upload-csv-btn').onchange = (e) => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -370,9 +408,54 @@ $('csv-import').onchange = (e) => {
 };
 
 // --- イベントリスナー設定 ---
+$volumeSlider.oninput = (e) => {
+  settings.volume = e.target.value;
+  // 再生中の曲があれば即座に音量を反映
+  if (settings.playing) {
+    settings.playing.volume = settings.volume;
+  }
+};
+
+if ($themeToggle) {
+  $themeToggle.onchange = (e) => {
+    if (e.target.checked) {
+      $theme.classList.add('theme-dark');      // ダークモードにする
+      localStorage.setItem('player_theme', 'dark');  // 状態を保存
+    } else {
+      $theme.classList.remove('theme-dark');   // ライトモードにする
+      localStorage.setItem('player_theme', 'light'); // 状態を保存
+    }
+  };
+}
+
 $hamburger.onclick = () => {
   $hamburger.classList.toggle('is-active');
   $nav.classList.toggle('is-active');
+};
+
+function updateVolume(newVolume) {
+  settings.volume = newVolume;      // 設定値を更新
+  $volumeSlider.value = newVolume;  // スライダーのツマミ位置も合わせる
+
+  // 再生中の曲があれば即座に音量を反映
+  if (settings.playing) {
+    settings.playing.volume = settings.volume;
+  }
+}
+
+// MIDボタンを押した時 (0.5)
+$btnVolMid.onclick = () => {
+  updateVolume(0.5);
+};
+
+// MAXボタンを押した時 (1.0)
+$btnVolMax.onclick = () => {
+  updateVolume(1.0);
+};
+
+// スライダーを動かした時の処理（先ほど追加した部分を updateVolume に置き換え）
+$volumeSlider.oninput = (e) => {
+  updateVolume(e.target.value);
 };
 
 $('view-player').onclick = (e) => {
@@ -400,20 +483,30 @@ $('useCustom').onchange = (e) => {
 for (const cat in buttons) {
   buttons[cat].btn.onclick = () => {
     const isReady = settings.states[cat];
+
     if (isReady) {
-      // 再生開始
+      // 再生
       stopAudio(settings.playing);
       settings.playing = null;
+
       setButtonsState(true, buttons[cat].btn);
+
       whatNow(cat);
       playSound();
+
     } else {
       // 停止
       stopAudio(settings.playing);
+
+      // 次の曲へ
+      advanceTrack(cat);
+
       settings.playing = null;
       settings.thisBgm = '';
+
       setButtonsState(false);
     }
+
     settings.states[cat] = !isReady;
     applySettingsToUI();
   };
@@ -454,5 +547,18 @@ window.onload = () => {
       console.warn('保存データの読み込みに失敗しました:', err);
     }
   }
+
+  const savedTheme = localStorage.getItem('player_theme');
+  if (savedTheme === 'dark') {
+    $theme.classList.add('theme-dark');
+    if ($themeToggle) $themeToggle.checked = true;
+  }
+
+  const initialDrumValue = $drumSelect.value;
+  const initialDrumTrack = bgm.drumRoll.find(t => t.title === initialDrumValue);
+  if (initialDrumTrack) {
+    playListManager.drumRoll.index = bgm.drumRoll.indexOf(initialDrumTrack);
+  }
+
   applySettingsToUI();
 };
