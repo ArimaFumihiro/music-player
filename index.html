@@ -16,13 +16,15 @@
   <nav class="navigation" id="navigation">
     <ul class="menu-contents">
       <li><a href="#" id="view-player">プレイヤー画面</a></li>
+      
       <li>
         <a href="#">曲選択（カスタム設定）</a>
         <div class="nav-sub-menu">
           <div class="nav-contents select-category" data-cat="standBy">待機曲</div>
+          <div class="nav-contents select-category" data-cat="admission">入場曲</div>
           <div class="nav-contents select-category" data-cat="bulletin">会報曲</div>
           <div class="nav-contents select-category" data-cat="introduction">紹介曲</div>
-          <div class="nav-contents select-category" data-cat="admission">入場曲</div>
+          <div class="nav-contents select-category" data-cat="award">表彰曲</div>
           <div class="nav-contents select-category" data-cat="closing">閉会曲</div>
         </div>
       </li>
@@ -35,10 +37,17 @@
               <span class="toggle"><span class="slider"></span></span>
             </label>
           </div>
-          <div class="nav-contents" id="csv-export">設定をCSV保存</div>
+          <div class="nav-contents">
+            <label class="switch">
+              <span class="environment">ダークテーマ</span>
+              <input type="checkbox" id="theme-toggle" />
+              <span class="toggle"><span class="slider"></span></span>
+            </label>
+          </div>
+          <div class="nav-contents" id="download-csv">設定をCSV保存</div>
           <div class="nav-contents">
             <label for="csv-import" style="cursor:pointer;">CSVから読込</label>
-            <input type="file" id="csv-import" accept=".csv" style="display:none;" />
+            <input type="file" id="upload-csv-btn" accept=".csv" style="display:none;" />
           </div>
         </a>
       </li>
@@ -46,75 +55,85 @@
   </nav>
   <div id="main">
     
-    <div class="player">
-      <div class="message">What's on right now♪</div>
-      <div class="player-list">
-        <span class="scroll-text" id="this-bgm">下のボタンを押してね！</span>
-      </div>
+  <div class="player">
+    <div class="message">What's on right now♪</div>
+
+    <div class="time-display" id="time-display">00:00 / 00:00</div>
+
+    <div class="volume-container">
+      <button id="btn-vol-mid" class="vol-btn">MID</button>
+      <span>🔈</span>
+      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+      <span>🔊</span>
+      <button id="btn-vol-max" class="vol-btn">MAX</button>
     </div>
 
-    <!-- ボタンを2列グリッドで並べる -->
-    <div class="btn-grid">
-      
-      <div class="conteinar">      
-        <div id="contents">Next BGM
-          <span class="next-bgm" id="next-standBy-bgm">待機曲 01</span>          
-        </div>      
-        <button class="main-btn" id="standBy">
-          <span id="standBy-text">待機</span><p id="standBy-shapes" class="icon-play">▶</p>
-        </button>
-      </div>
-      
-      <div class="conteinar">
-        <div id="contents">Next BGM
-          <span class="next-bgm" id="next-bulletin-bgm">会報曲 01</span>
-        </div>
-        <button class="main-btn" id="bulletin">
-          <span id="bulletin-text">会報</span>
-          <p id="bulletin-shapes" class="icon-play">▶</p>
-        </button>
-      </div>
+    <div class="player-list">
+      <span class="scroll-text" id="this-bgm">下のボタンを押してね！</span>
+    </div>
+  </div>
 
-      <div class="conteinar">
-        <div id="contents">Next BGM
-          <span class="next-bgm" id="next-introduction-bgm">紹介曲 01</span>
-        </div>
-        <button class="main-btn" id="introduction">
-          <span id="introduction-text">紹介</span>
-          <p id="introduction-shapes" class="icon-play">▶</p>
-        </button>
-      </div>
-
-      <div class="conteinar">
-        <div id="contents">Next BGM
-          <span class="next-bgm" id="next-admission-bgm">入場曲 01</span>
-        </div>
-        <button class="main-btn" id="admission">
-          <span id="admission-text">入場</span>
-          <p id="admission-shapes" class="icon-play">▶</p>
-        </button>
+  <!-- ボタンを2列グリッドで並べる -->
+  <div class="btn-grid">
+    
+    <div class="conteinar">      
+      <div id="contents">Next BGM
+        <span class="next-bgm" id="next-standBy-bgm">待機曲 01</span>          
       </div>      
-
-      
-      <div class="conteinar">
-        <div id="contents">Next BGM
-          <span class="next-bgm" id="next-award-bgm">表彰曲 01</span>
-        </div>
-        <button class="main-btn" id="award">
-          <span id="award-text">表彰</span>
-          <p id="award-shapes" class="icon-play">▶</p>
-        </button>
+      <button class="main-btn" id="standBy">
+        <span id="standBy-text">待機</span><p id="standBy-shapes" class="icon-play">▶</p>
+      </button>
+    </div>
+    
+    <div class="conteinar">
+      <div id="contents">Next BGM
+        <span class="next-bgm" id="next-admission-bgm">入場曲 01</span>
       </div>
+      <button class="main-btn" id="admission">
+        <span id="admission-text">入場</span>
+        <p id="admission-shapes" class="icon-play">▶</p>
+      </button>
+    </div>
+    <div class="conteinar">
+      <div id="contents">Next BGM
+        <span class="next-bgm" id="next-introduction-bgm">紹介曲 01</span>
+      </div>
+      <button class="main-btn" id="introduction">
+        <span id="introduction-text">紹介</span>
+        <p id="introduction-shapes" class="icon-play">▶</p>
+      </button>
+    </div>
+      
+    <div class="conteinar">
+      <div id="contents">Next BGM
+        <span class="next-bgm" id="next-closing-bgm">閉会曲 01</span>
+      </div>
+      <button class="main-btn" id="closing">
+        <span id="closing-text">閉会</span>
+        <p id="closing-shapes" class="icon-play">▶</p>
+      </button>
+    </div>     
+    
+    <div class="conteinar">
+      <div id="contents">Next BGM
+        <span class="next-bgm" id="next-bulletin-bgm">会報曲 01</span>
+      </div>
+      <button class="main-btn" id="bulletin">
+        <span id="bulletin-text">会報</span>
+        <p id="bulletin-shapes" class="icon-play">▶</p>
+      </button>
+    </div>
+    
+    <div class="conteinar">
+      <div id="contents">Next BGM
+        <span class="next-bgm" id="next-award-bgm">表彰曲 01</span>
+      </div>
+      <button class="main-btn" id="award">
+        <span id="award-text">表彰</span>
+        <p id="award-shapes" class="icon-play">▶</p>
+      </button>
+    </div>
 
-      <div class="conteinar">
-        <div id="contents">Next BGM
-          <span class="next-bgm" id="next-closing-bgm">閉会曲 01</span>
-        </div>
-        <button class="main-btn" id="closing">
-          <span id="closing-text">閉会</span>
-          <p id="closing-shapes" class="icon-play">▶</p>
-        </button>
-      </div>     
       
     </div><!-- /.btn-grid -->
 
