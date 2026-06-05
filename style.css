@@ -47,7 +47,7 @@
 body {
   margin: 0;
   font-family: 'M PLUS Rounded 1c', 'Noto Sans JP', system-ui, 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Meiryo', sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   min-height: 100vh;
   background: var(--bg);
   overflow: hidden;
@@ -255,7 +255,7 @@ main
 }
 
 .message {
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   font-weight: bold;
 }
 
@@ -279,11 +279,11 @@ main
 
 .main-btn {
   padding: 6px;
-  margin: 1px auto 14px;
+  margin: 0px auto 10px;
   border: none;
   width: 100%;
   max-width: 340px;
-  height: clamp(64px, 11dvh, 120px);
+  height: clamp(70px, 10dvh, 110px);
   border-radius: 24px;
   box-shadow: 0 4px 10px var(--shadow);
   font-size: clamp(1.2rem, 5vw, 2.4em);
@@ -360,7 +360,7 @@ player
 }
 
 .player-list {
-  height: clamp(24px, 3.3dvh, 40px);
+  height: clamp(22px, 2.8dvh, 32px);
   width: 100%;
   max-width: 340px;
   background-color: var(--bg);
@@ -451,7 +451,7 @@ player
   ========================= */
 .time-display {
   font-family: monospace;
-  font-size: 1rem;
+  font-size: 0.9rem;
   margin: 5px 0;
   color: var(--text);
 }
