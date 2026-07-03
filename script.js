@@ -73,12 +73,12 @@ const bgm = {
   ],
   admission: [
     { id: 'ad01', title: '入場曲 01', path: 'admission_title_01' },
-    { id: 'ad02', title: '入場曲 02', path: 'admission_title_02' },
-    { id: 'ad03', title: '入場曲 03', path: 'admission_title_03' },
-    { id: 'ad04', title: '入場曲 04', path: 'admission_title_04' },
-    { id: 'ad05', title: '入場曲 05', path: 'admission_title_05' },
-    { id: 'ad06', title: '入場曲 06', path: 'admission_title_06' },
-    { id: 'ad07', title: '入場曲 07', path: 'admission_title_07' },
+    // { id: 'ad02', title: '入場曲 02', path: 'admission_title_02' },
+    // { id: 'ad03', title: '入場曲 03', path: 'admission_title_03' },
+    // { id: 'ad04', title: '入場曲 04', path: 'admission_title_04' },
+    // { id: 'ad05', title: '入場曲 05', path: 'admission_title_05' },
+    // { id: 'ad06', title: '入場曲 06', path: 'admission_title_06' },
+    // { id: 'ad07', title: '入場曲 07', path: 'admission_title_07' },
   ],
   award: [
     { id: 'aw01', title: '表彰曲 01', path: 'award_title_01' },
@@ -87,9 +87,9 @@ const bgm = {
   ],
   closing: [
     { id: 'cl01', title: '閉会曲 01', path: 'closing_title_01' },
-    { id: 'cl02', title: '閉会曲 02', path: 'closing_title_02' },
-    { id: 'cl03', title: '閉会曲 03', path: 'closing_title_03' },
-    { id: 'cl04', title: '閉会曲 04', path: 'closing_title_04' },
+    // { id: 'cl02', title: '閉会曲 02', path: 'closing_title_02' },
+    // { id: 'cl03', title: '閉会曲 03', path: 'closing_title_03' },
+    // { id: 'cl04', title: '閉会曲 04', path: 'closing_title_04' },
   ],
   drumRoll: [
     { id: 'dr01', title: 'Short',  path: 'drumRoll_title_01' },
