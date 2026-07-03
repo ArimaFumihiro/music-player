@@ -64,7 +64,7 @@ const bgm = {
   bulletin: [
     { id: 'bu01', title: '会報曲 01', path: 'bulletin_title_01' },
     { id: 'bu02', title: '会報曲 02', path: 'bulletin_title_02' },
-    { id: 'bu03', title: '会報曲 03', path: 'bulletin_title_03' },
+    // { id: 'bu03', title: '会報曲 03', path: 'bulletin_title_03' },
   ],
   introduction: [
     { id: 'in01', title: '紹介曲 01', path: 'introduction_title_01' },
