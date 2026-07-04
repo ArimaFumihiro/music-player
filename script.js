@@ -69,7 +69,7 @@ const bgm = {
   introduction: [
     { id: 'in01', title: '紹介曲 01', path: 'introduction_title_01' },
     { id: 'in02', title: '紹介曲 02', path: 'introduction_title_02' },
-    { id: 'in03', title: '紹介曲 03', path: 'introduction_title_03' },
+    // { id: 'in03', title: '紹介曲 03', path: 'introduction_title_03' },
   ],
   admission: [
     { id: 'ad01', title: '入場曲 01', path: 'admission_title_01' },
